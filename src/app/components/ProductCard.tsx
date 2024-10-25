@@ -7,7 +7,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ name, type, price, ima
   <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
     <div className="relative h-48 bg-gray-200">
       <Image 
-        src={image || "/api/placeholder/400/320"}
+        src={image}
         alt={name}
         fill
         className="object-cover"
