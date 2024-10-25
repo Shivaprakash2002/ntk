@@ -1,13 +1,21 @@
 // import { useState } from 'react';
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
-import { ShoppingCart, Heart, Share2 } from 'lucide-react';
-import Image from 'next/image';
+import { ShoppingCart, Heart, Share2 } from "lucide-react";
+import Image from "next/image";
 
-export default async function Product({ params }) {
-  const product = await client.fetch(groq`*[_type == "product" && _id == $id][0]`, {
-    id: params.id
-  });
+export default async function Product({
+  params,
+}: {
+  params: { categoryName: string; id: string };
+}) {
+  const product = await client.fetch(
+    groq`*[_type == "product" && _id == $id][0]`,
+    {
+      id: parseInt(params.id),
+      category: params.categoryName,
+    }
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
@@ -25,7 +33,10 @@ export default async function Product({ params }) {
           </div>
           <div className="grid grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((_, index) => (
-              <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+              <div
+                key={index}
+                className="aspect-square bg-gray-200 rounded-lg overflow-hidden"
+              >
                 <Image
                   src="/api/placeholder/150/150"
                   alt={`${product.name} - ${index + 1}`}

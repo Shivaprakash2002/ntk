@@ -5,6 +5,7 @@ export interface Product {
     price: number;
     description: string;
     images: string[];
+    category: string
   }
   
   export interface ProductCardProps {
@@ -12,6 +13,7 @@ export interface Product {
     type: string;
     price: number;
     image?: string;
+    category: string
   }
   
   export interface ProductTypeCardProps {
