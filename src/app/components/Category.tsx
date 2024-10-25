@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { ProductTypeCardProps } from '../types/product';
 
-export const ProductTypeCard: React.FC<ProductTypeCardProps> = ({ type, count }) => (
+export const Category: React.FC<ProductTypeCardProps> = ({ type, count }) => (
   <div className="relative overflow-hidden rounded-lg group">
     <div className="relative h-64 bg-gray-200">
       <Image
@@ -26,4 +26,4 @@ export const ProductTypeCard: React.FC<ProductTypeCardProps> = ({ type, count })
   </div>
 );
 
-export default ProductTypeCard;
+export default Category;

@@ -6,6 +6,7 @@ export interface Image {
 }
 
 export interface Product {
+  category: any;
   _id: string;
   name: string;
   type: string;
