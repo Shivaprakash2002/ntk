@@ -6,7 +6,7 @@ export interface Image {
 }
 
 export interface Product {
-  category: any;
+  category: string;
   _id: string;
   name: string;
   type: string;
@@ -25,4 +25,24 @@ export interface ProductCardProps {
 export interface ProductTypeCardProps {
   type: string;
   count: number;
+}
+
+export interface CategoryProps{
+  _id: string;
+  name: string;
+  slug: string;
+  image: Image
+}
+
+
+
+export interface SlideItem {
+  title: string;
+  subtitle: string;
+  ctaText: string;
+  image: string;
+}
+
+export interface HeroSectionProps {
+  slides?: SlideItem[];
 }

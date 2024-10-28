@@ -2,72 +2,38 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Minus, Plus, X, RefreshCw } from 'lucide-react';
+import { useCartContext } from '@/context/CartContext';
 
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-  size?: string;
-  color?: string;
-}
+export const CartPage: React.FC = () => {
+  const { 
+    cart, 
+    removeFromCart, 
+    updateQuantity,
+  } = useCartContext();
+  
+  const [isUpdating, setIsUpdating] = useState<string | null>(null);
 
-interface CartProps {
-  initialItems?: CartItem[];
-}
-
-const defaultItems: CartItem[] = [
-  {
-    id: 1,
-    name: "Classic White T-Shirt",
-    price: 29.99,
-    quantity: 1,
-    image: "/product1.jpg",
-    size: "M",
-    color: "White"
-  },
-  {
-    id: 2,
-    name: "Slim Fit Jeans",
-    price: 59.99,
-    quantity: 2,
-    image: "/product2.jpg",
-    size: "32",
-    color: "Blue"
-  }
-];
-
-export const CartPage: React.FC<CartProps> = ({ initialItems = defaultItems }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(initialItems);
-  const [isUpdating, setIsUpdating] = useState<number | null>(null);
-
-  // Calculate total price
-  const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  // Calculate totals
+  const subtotal = cart.reduce((total, item) => 
+    total + (item.product.price * item.quantity), 0);
   const shipping = subtotal > 100 ? 0 : 10;
   const tax = subtotal * 0.1; // 10% tax
   const total = subtotal + shipping + tax;
 
-  // Update quantity
-  const updateQuantity = (id: number, newQuantity: number) => {
+  // Handle quantity update with loading state
+  const handleQuantityUpdate = (productId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setIsUpdating(id);
+    setIsUpdating(productId);
     
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    updateQuantity(productId, newQuantity);
 
     // Simulate API call
     setTimeout(() => setIsUpdating(null), 500);
   };
 
-  // Remove item
-  const removeItem = (id: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-  };
 
+
+  console.log(cart)
   return (
     <div className="min-h-screen bg-gray-300 py-8">
       <div className="max-w-6xl mx-auto px-4">
@@ -76,22 +42,22 @@ export const CartPage: React.FC<CartProps> = ({ initialItems = defaultItems }) =
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Cart Items List */}
           <div className="lg:w-2/3">
-            {cartItems.length === 0 ? (
+            {cart.length === 0 ? (
               <div className="bg-white rounded-lg p-8 text-center">
                 <p className="text-gray-900 text-lg">Your cart is empty</p>
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow">
-                {cartItems.map((item) => (
+                {cart.map((item) => (
                   <div 
-                    key={item.id}
+                    key={item.product._id}
                     className="flex items-center gap-4 p-4 border-b last:border-b-0"
                   >
                     {/* Product Image */}
                     <div className="relative w-24 h-24 flex-shrink-0">
                       <Image
-                        src={item.image}
-                        alt={item.name}
+                        src={item.product?.images[0]?.asset.url}
+                        alt={item.product.name}
                         fill
                         className="object-cover rounded"
                       />
@@ -99,37 +65,37 @@ export const CartPage: React.FC<CartProps> = ({ initialItems = defaultItems }) =
 
                     {/* Product Details */}
                     <div className="flex-grow">
-                      <h3 className="text-lg font-medium">{item.name}</h3>
-                      <div className="text-sm text-gray-500 mt-1">
-                        {item.size && <span>Size: {item.size} </span>}
-                        {item.color && <span>• Color: {item.color}</span>}
-                      </div>
+                      <h3 className="text-lg font-medium">{item.product.name}</h3>
+                      {/* <div className="text-sm text-gray-500 mt-1">
+                        {item.product.size && <span>Size: {item.product.size} </span>}
+                        {item.product.color && <span>• Color: {item.product.color}</span>}
+                      </div> */}
                       <div className="text-lg font-medium mt-2">
-                        ${item.price.toFixed(2)}
+                        ${item.product.price.toFixed(2)}
                       </div>
                     </div>
 
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => handleQuantityUpdate(item.product._id, item.quantity - 1)}
                         className="p-1 rounded hover:bg-gray-100"
-                        disabled={isUpdating === item.id}
+                        disabled={isUpdating === item.product._id}
                       >
                         <Minus size={16} />
                       </button>
                       <span className="w-8 text-center">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => handleQuantityUpdate(item.product._id, item.quantity + 1)}
                         className="p-1 rounded hover:bg-gray-100"
-                        disabled={isUpdating === item.id}
+                        disabled={isUpdating === item.product._id}
                       >
                         <Plus size={16} />
                       </button>
                     </div>
 
                     {/* Update Indicator */}
-                    {isUpdating === item.id && (
+                    {isUpdating === item.product._id && (
                       <div className="w-6 h-6 animate-spin">
                         <RefreshCw size={24} />
                       </div>
@@ -137,7 +103,7 @@ export const CartPage: React.FC<CartProps> = ({ initialItems = defaultItems }) =
 
                     {/* Remove Button */}
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeFromCart(item.product._id)}
                       className="p-2 text-gray-400 hover:text-gray-600"
                     >
                       <X size={20} />
@@ -181,7 +147,7 @@ export const CartPage: React.FC<CartProps> = ({ initialItems = defaultItems }) =
               <button 
                 className="w-full mt-6 bg-black text-white py-3 rounded-md hover:bg-gray-800 
                 transition-colors font-medium disabled:bg-gray-400"
-                disabled={cartItems.length === 0}
+                disabled={cart.length === 0}
               >
                 Proceed to Checkout
               </button>

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ShoppingCart, Menu, X, Search, User } from 'lucide-react';
+import { useCartContext } from '@/context/CartContext';
 
 interface NavItem {
   label: string;
@@ -11,13 +12,13 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Products', href: '/products' },
-  { label: 'Categories', href: '/categories' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { getCartItemsCount } = useCartContext();
 
   return (
     <nav className="relative bg-white shadow">
@@ -52,7 +53,7 @@ const Navbar = () => {
             <Link href="/cart" className="relative text-gray-600 hover:text-gray-900">
               <ShoppingCart className="h-5 w-5" />
               <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
+                {getCartItemsCount()}
               </span>
             </Link>
           </div>

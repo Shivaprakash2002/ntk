@@ -4,10 +4,13 @@ import React, { useState } from "react";
 import { useProductContext } from "@/context/ProductContext"; 
 import { ShoppingCart, Heart, Share2 } from "lucide-react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation"; 
+import { useCartContext } from "@/context/CartContext";
+import { Product } from "@/app/types";
+
 
 export default function Product({ params }: { params: { categoryName: string; productId: string } }) {
   const { products } = useProductContext();
+  const { addToCart, cart } = useCartContext();
 
   const product = products?.find((p) => p._id === params.productId);
 
@@ -17,6 +20,10 @@ export default function Product({ params }: { params: { categoryName: string; pr
     setSelectedImage(imageUrl); // Update the selected image URL
   };
 
+  const handleAddToCart = (product: Product) => {
+    console.log('Products available:', products);
+    addToCart(product._id, products);
+  };
   return (
     <>
     <div className="max-w-7xl mx-auto px-4 py-16">
@@ -78,8 +85,8 @@ export default function Product({ params }: { params: { categoryName: string; pr
             <p className="text-gray-600">{product?.description}</p>
           </div>
   
-          <div className="space-y-4">
-            <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800">
+          <div className="space-y-4" >
+            <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800" onClick={() => handleAddToCart(product!)} >
               <ShoppingCart />
               Add to Cart
             </button>
