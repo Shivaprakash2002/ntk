@@ -17,10 +17,26 @@ export const product = defineType({
       options: { source: "name" },
     },
     {
-      name: "images",
-      title: "Images",
+      name: "colorImageMap",
+      title: "Color & Image Map",
       type: "array",
-      of: [{ type: "image" }],
+      of: [
+        {
+          type: "object",
+          fields: [
+            {
+              name: "color",
+              title: "Color",
+              type: "color",
+            },
+            {
+              name: "image",
+              title: "Image",
+              type: "image",
+            },
+          ],
+        },
+      ],
     },
     {
       name: "description",
