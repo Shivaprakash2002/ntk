@@ -4,12 +4,21 @@ import React, { useState } from "react";
 import { useProductContext } from "@/context/ProductContext";
 import { ShoppingCart, Heart, Share2 } from "lucide-react";
 import Image from "next/image";
+
 import { useRouter } from 'next/navigation';
+
+import { useCartContext } from "@/context/CartContext";
+import { Product } from "@/app/types";
+
 
 
 export default function Product({ params }: { params: { categoryName: string; productId: string } }) {
   const { products } = useProductContext();
+
   const router = useRouter();
+
+  const { addToCart, cart } = useCartContext();
+
 
   const product = products?.find((p) => p._id === params.productId);
 
@@ -21,6 +30,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
     setSelectedImage(imageUrl);
   };
 
+
   const handleAddToCart = () => {
     console.log(product?._id);
     if (product) {
@@ -29,6 +39,12 @@ export default function Product({ params }: { params: { categoryName: string; pr
       console.error('product is undefined');
     }
   }
+
+
+  const handleAddToCart = (product: Product) => {
+    console.log('Products available:', products);
+    addToCart(product._id, products);
+  };
 
   return (
     <>
@@ -107,6 +123,23 @@ export default function Product({ params }: { params: { categoryName: string; pr
               </button>
             </div>
           </div>
+
+  
+          <div>
+            <h2 className="font-semibold mb-2">Description</h2>
+            <p className="text-gray-600">{product?.description}</p>
+          </div>
+  
+          <div className="space-y-4" >
+            <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800" onClick={() => handleAddToCart(product!)} >
+              <ShoppingCart />
+              Add to Cart
+            </button>
+            <button className="w-full border border-black py-3 px-6 rounded-md hover:bg-gray-50">
+              Buy Now
+            </button>
+          </div>
+
         </div>
       </div>
     </>

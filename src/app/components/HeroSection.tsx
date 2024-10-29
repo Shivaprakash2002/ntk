@@ -2,40 +2,14 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { HeroSectionProps } from "../types";
 
-interface SlideItem {
-  title: string;
-  subtitle: string;
-  ctaText: string;
-  image: string;
-}
 
-interface HeroSectionProps {
-  slides?: SlideItem[];
-}
 
-const defaultSlides: SlideItem[] = [
-  {
-    title: "Summer Collection 2024",
-    subtitle: "Discover the latest trends in fashion",
-    ctaText: "Shop Now",
-    image: "/slide1.jpg",
-  },
-  {
-    title: "New Arrivals",
-    subtitle: "Be the first to wear our latest designs",
-    ctaText: "Explore",
-    image: "/slide2.jpg",
-  },
-  {
-    title: "Special Offers",
-    subtitle: "Up to 50% off on selected items",
-    ctaText: "Shop Sale",
-    image: "/slide3.jpg",
-  },
-];
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ slides = defaultSlides }) => {
+
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ slides }) => {
   // State for tracking current slide and animation status
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);

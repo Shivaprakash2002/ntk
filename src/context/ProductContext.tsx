@@ -1,13 +1,12 @@
 "use client"
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { client } from "@/sanity/lib/client";
-import { groq } from "next-sanity";
-import { Product } from "@/app/types/product";
+import { CategoryProps, Product } from "@/app/types";
+import { getAllProducts, getCategories } from "@/app/lib/query";
 
 interface ProductContextType {
   products: Product[] | null;
   productTypes: Record<string, number>;
+  categories: CategoryProps[] | null;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -15,25 +14,16 @@ const ProductContext = createContext<ProductContextType | undefined>(undefined);
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[] | null>(null);
   const [productTypes, setProductTypes] = useState<Record<string, number>>({});
+  const [categories, setCategories] = useState<CategoryProps[] | null>(null);
+  
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const fetchedProducts = await client.fetch<Product[]>(
-        groq`*[_type=="product"]{
-          _id,
-          name,
-          type,
-          price,
-          description,
-          images[] {
-            asset-> {
-              _id,
-              url
-            }
-          }
-        }`
-      );
+      
+      const fetchedProducts = await getAllProducts();
 
+      const fetchedCategories = await getCategories();
+      setCategories(fetchedCategories);
       setProducts(fetchedProducts);
 
       const types = fetchedProducts.reduce<Record<string, number>>(
@@ -51,10 +41,10 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     };
 
     fetchProducts();
-  }, []);
+  }, []); // Watch selectedCategory for changes
 
   return (
-    <ProductContext.Provider value={{ products, productTypes }}>
+    <ProductContext.Provider value={{ products, categories, productTypes}}>
       {children}
     </ProductContext.Provider>
   );
