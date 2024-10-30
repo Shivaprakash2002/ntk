@@ -4,20 +4,17 @@ import React, { useState } from "react";
 import { useProductContext } from "@/context/ProductContext";
 import { ShoppingCart, Heart, Share2 } from "lucide-react";
 import Image from "next/image";
-
-import { useRouter } from 'next/navigation';
-
 import { useCartContext } from "@/context/CartContext";
-import { Product } from "@/app/types";
+
 
 
 
 export default function Product({ params }: { params: { categoryName: string; productId: string } }) {
   const { products } = useProductContext();
 
-  const router = useRouter();
 
-  const { addToCart, cart } = useCartContext();
+
+  const { addToCart } = useCartContext();
 
 
   const product = products?.find((p) => p._id === params.productId);
@@ -31,20 +28,6 @@ export default function Product({ params }: { params: { categoryName: string; pr
   };
 
 
-  const handleAddToCart = () => {
-    console.log(product?._id);
-    if (product) {
-      router.push(`/cart/${product?._id}`);
-    } else {
-      console.error('product is undefined');
-    }
-  }
-
-
-  const handleAddToCart = (product: Product) => {
-    console.log('Products available:', products);
-    addToCart(product._id, products);
-  };
 
   return (
     <>
@@ -70,7 +53,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
             {/* Thumbnail Images */}
             <div className="grid grid-cols-4 gap-4">
-              {product?.images.map((image, index) => (
+              {product?.images?.map((image, index) => (
                 <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
                   <Image
                     src={image.asset.url}
@@ -114,7 +97,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
             <div className="space-y-4">
               <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800"
-                onClick={() => handleAddToCart()}>
+                onClick={() =>   addToCart(product._id, products)}>
                 <ShoppingCart />
                 Add to Cart
               </button>
@@ -125,20 +108,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
           </div>
 
   
-          <div>
-            <h2 className="font-semibold mb-2">Description</h2>
-            <p className="text-gray-600">{product?.description}</p>
-          </div>
-  
-          <div className="space-y-4" >
-            <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800" onClick={() => handleAddToCart(product!)} >
-              <ShoppingCart />
-              Add to Cart
-            </button>
-            <button className="w-full border border-black py-3 px-6 rounded-md hover:bg-gray-50">
-              Buy Now
-            </button>
-          </div>
+        
 
         </div>
       </div>

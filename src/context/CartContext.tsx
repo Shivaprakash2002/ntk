@@ -1,6 +1,6 @@
 "use client"
 import { Product } from "@/app/types";
-import { createContext, ReactNode, useContext, useState, useCallback } from "react";
+import { createContext, ReactNode, useContext, useState, useCallback, useEffect } from "react";
 
 interface CartItem {
   product: Product;
@@ -13,14 +13,35 @@ interface CartContextProps {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   emptyCart: () => void;
-  getCartTotal: () => number;  // Changed return type to number
-  getCartItemsCount: () => number;  // Changed return type to number
+  getCartTotal: () => number;
+  getCartItemsCount: () => number;
 }
+
+const CART_STORAGE_KEY = 'shopping-cart';
 
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
+  // Initialize with empty array to avoid hydration mismatch
   const [cart, setCart] = useState<CartItem[]>([]);
+  
+  // Handle localStorage in a separate useEffect
+  useEffect(() => {
+    // Only run this effect once on mount
+    const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  // Save to localStorage whenever cart changes
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } else {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    }
+  }, [cart]);
 
   const addToCart = useCallback((productId: string, products: Product[]) => {
     const product = products?.find((product) => product._id === productId);
@@ -36,7 +57,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       );
 
       if (existingItemIndex >= 0) {
-        // Create a new array to ensure state immutability
         const newCart = [...prevCart];
         newCart[existingItemIndex] = {
           ...newCart[existingItemIndex],
@@ -45,7 +65,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return newCart;
       }
       
-      // Add new item
       return [...prevCart, { product, quantity: 1 }];
     });
   }, []);
