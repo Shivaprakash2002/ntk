@@ -5,7 +5,6 @@ import { useProductContext } from "@/context/ProductContext";
 
 export default function Page() {
   const {  products } = useProductContext();
-  
 
 
   return (
@@ -21,7 +20,7 @@ export default function Page() {
             name={product.name}
             type={product.type}
             price={product.price}
-            image={product.images?.[0]?.asset?.url}
+            image={product.colorImageMap[0].image.asset.url}
             category={product.category?.name}
           />
           

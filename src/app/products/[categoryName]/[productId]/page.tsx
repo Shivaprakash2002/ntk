@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useProductContext } from "@/context/ProductContext";
 import { ShoppingCart, Heart, Share2 } from "lucide-react";
 import Image from "next/image";
@@ -8,42 +8,31 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 
 import { useCartContext } from "@/context/CartContext";
-import { Product } from "@/app/types";
-
 
 
 export default function Product({ params }: { params: { categoryName: string; productId: string } }) {
   const { products } = useProductContext();
-
+  const { addToCart } = useCartContext();
   const router = useRouter();
 
-  const { addToCart, cart } = useCartContext();
-
-
   const product = products?.find((p) => p._id === params.productId);
+  const colors = product?.colorImageMap?.map((ele) => ele.color.hex) || [];  
 
-  console.log('colorproduct',product);
+  const [selectedColor, setSelectedColor] = useState(colors.length > 0 ? colors[0] : "");  
+    const [selectedImage, setSelectedImage] = useState(product?.colorImageMap[0]?.image?.asset?.url);
 
-  const [selectedImage, setSelectedImage] = useState(product?.images?.[0]?.asset?.url);
+  // Update selectedImage when selectedColor changes
+  useEffect(() => {
+    const img = product?.colorImageMap.find((ele) => ele.color.hex === selectedColor);
+    setSelectedImage(img?.image?.asset?.url);
+  }, [selectedColor, product?.colorImageMap]);
 
-  const handleThumbnailClick = (imageUrl: string) => {
+  const handleThumbnailClick = (imageUrl) => {
     setSelectedImage(imageUrl);
   };
 
-
-  const handleAddToCart = () => {
-    console.log(product?._id);
-    if (product) {
-      router.push(`/cart/${product?._id}`);
-    } else {
-      console.error('product is undefined');
-    }
-  }
-
-
-  const handleAddToCart = (product: Product) => {
-    console.log('Products available:', products);
-    addToCart(product._id, products);
+  const handleColorClick = (color) => {
+    setSelectedColor(color);
   };
 
   return (
@@ -54,9 +43,9 @@ export default function Product({ params }: { params: { categoryName: string; pr
           <div className="space-y-4">
             {/* Main Image */}
             <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-              {selectedImage || product?.images?.[0]?.asset?.url ? (
+              {selectedImage ? (
                 <Image
-                  src={selectedImage || product?.images?.[0]?.asset?.url}
+                  src={selectedImage}
                   alt={product?.name}
                   className="object-cover w-full h-full"
                   width={500}
@@ -70,15 +59,15 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
             {/* Thumbnail Images */}
             <div className="grid grid-cols-4 gap-4">
-              {product?.images.map((image, index) => (
+              {product?.colorImageMap.map((ele, index) => (
                 <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
                   <Image
-                    src={image.asset.url}
+                    src={ele.image?.asset?.url}
                     alt={`${product?.name} - ${index + 1}`}
                     className="object-cover w-full h-full"
                     width={100}
                     height={100}
-                    onClick={() => handleThumbnailClick(image.asset.url)}
+                    onClick={() => handleThumbnailClick(ele.image?.asset?.url)}
                   />
                 </div>
               ))}
@@ -107,6 +96,23 @@ export default function Product({ params }: { params: { categoryName: string; pr
               </div>
             </div>
 
+            <div className="flex gap-2">
+              {colors.map((ele, index) => (
+                <button
+                  key={index}
+                  style={{
+                    background: ele,
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                  }}
+                  onClick={() => handleColorClick(ele)}
+                ></button>
+              ))}
+            </div>
+
+
+
             <div>
               <h2 className="font-semibold mb-2">Description</h2>
               <p className="text-gray-600">{product?.description}</p>
@@ -114,7 +120,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
             <div className="space-y-4">
               <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800"
-                onClick={() => handleAddToCart()}>
+                onClick={() => addToCart(product._id, products)}>
                 <ShoppingCart />
                 Add to Cart
               </button>
@@ -122,22 +128,6 @@ export default function Product({ params }: { params: { categoryName: string; pr
                 Buy Now
               </button>
             </div>
-          </div>
-
-  
-          <div>
-            <h2 className="font-semibold mb-2">Description</h2>
-            <p className="text-gray-600">{product?.description}</p>
-          </div>
-  
-          <div className="space-y-4" >
-            <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800" onClick={() => handleAddToCart(product!)} >
-              <ShoppingCart />
-              Add to Cart
-            </button>
-            <button className="w-full border border-black py-3 px-6 rounded-md hover:bg-gray-50">
-              Buy Now
-            </button>
           </div>
 
         </div>

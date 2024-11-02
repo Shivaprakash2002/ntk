@@ -27,7 +27,10 @@ export const product = defineType({
             {
               name: "color",
               title: "Color",
-              type: "color",
+              type: "color", 
+              options: {
+                disableAlpha: true, 
+              },
             },
             {
               name: "image",
