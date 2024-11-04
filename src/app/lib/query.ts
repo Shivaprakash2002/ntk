@@ -8,15 +8,18 @@ export const getAllProducts = async (): Promise<Product[]> => {
     groq`*[_type=="product"]{
       _id,
       name,
-     category-> {  
+      category-> {  
         name,
       },
       price,
       description,
-      images[] {
-        asset-> {
-          _id,
-          url
+      colorImageMap[] {
+        color { hex },
+        image {
+          asset-> {
+            _id,
+            url
+          }
         }
       }
     }`,
@@ -24,6 +27,9 @@ export const getAllProducts = async (): Promise<Product[]> => {
     { cache: "no-store" }
   );
 };
+
+
+
 
 export const getCategories = async (): Promise<CategoryProps[]> => {
   return await client.fetch<CategoryProps[]>(
@@ -56,7 +62,7 @@ export const getProductsByCategory = async (category: string) => {
   }
 }
   }`,
-  {},
+    {},
     { cache: "no-store" }
   )
 

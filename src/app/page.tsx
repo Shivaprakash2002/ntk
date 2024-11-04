@@ -12,9 +12,7 @@ import { defaultSlides } from "./constants";
 export default function Home() {
   const { products, categories } = useProductContext(); 
 
-  // console.log('Home',products);
-
-
+ 
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroSection
@@ -35,12 +33,12 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products?.map((product) => (
             <ProductCard
-            key={product._id}
+              key={product._id}
               id={product._id}
               name={product.name}
               type={product.type}
               price={product.price}
-              image={product.images?.[0]?.asset?.url}
+              image={product.colorImageMap[0].image.asset.url}
               category={product.type}
             />
           ))}

@@ -15,16 +15,6 @@ export default function Page({ params }: { params: { categoryName: string } }) {
     }
 }, [products]);
 
-  
-  
-
-
-
-  // Log inside a separate effect to see the updated category
-  // useEffect(() => {
-  //   console.log("Selected Category after setting:", selectedCategory);
-  //   console.log("Products after setting category:", products);
-  // }, [selectedCategory, products]); // React to changes in selectedCategory and products
 
   const normalizeString = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, "");
 
