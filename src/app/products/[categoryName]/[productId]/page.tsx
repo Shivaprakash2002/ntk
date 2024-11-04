@@ -4,9 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useProductContext } from "@/context/ProductContext";
 import { ShoppingCart, Heart, Share2 } from "lucide-react";
 import Image from "next/image";
-
-import { useRouter } from 'next/navigation';
-
 import { useCartContext } from "@/context/CartContext";
 
 
@@ -14,6 +11,10 @@ export default function Product({ params }: { params: { categoryName: string; pr
   const { products } = useProductContext();
   const { addToCart } = useCartContext();
   const router = useRouter();
+
+
+
+  const { addToCart } = useCartContext();
 
   const product = products?.find((p) => p._id === params.productId);
   const colors = product?.colorImageMap?.map((ele) => ele.color.hex) || [];  
@@ -34,6 +35,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
   const handleColorClick = (color) => {
     setSelectedColor(color);
   };
+
 
   return (
     <>
@@ -60,6 +62,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
             {/* Thumbnail Images */}
             <div className="grid grid-cols-4 gap-4">
               {product?.colorImageMap.map((ele, index) => (
+              {product?.images?.map((image, index) => (
                 <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
                   <Image
                     src={ele.image?.asset?.url}
@@ -121,6 +124,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
             <div className="space-y-4">
               <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800"
                 onClick={() => addToCart(product._id, products)}>
+                onClick={() =>   addToCart(product._id, products)}>
                 <ShoppingCart />
                 Add to Cart
               </button>
@@ -129,7 +133,6 @@ export default function Product({ params }: { params: { categoryName: string; pr
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </>
