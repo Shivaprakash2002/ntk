@@ -15,17 +15,21 @@ export default function Product({ params }: { params: { categoryName: string; pr
   const { addToCart } = useCartContext();
   const router = useRouter();
 
+  console.log('products', products);
+
   const product = products?.find((p) => p._id === params.productId);
-  const colors = product?.colorImageMap?.map((ele) => ele.color.hex) || [];  
+  const colors = product?.colorImageMap?.map((ele) => ele.color.hex) || [];
 
-  const [selectedColor, setSelectedColor] = useState(colors.length > 0 ? colors[0] : "");  
-    const [selectedImage, setSelectedImage] = useState(product?.colorImageMap[0]?.image?.asset?.url);
+  const [selectedColor, setSelectedColor] = useState(colors.length > 0 ? colors[0] : "");
+  const [selectedImage, setSelectedImage] = useState(product?.colorImageMap[0]?.images[0]?.asset?.url);
+  const [imgMap, setImgMap] = useState([]);
 
-  // Update selectedImage when selectedColor changes
   useEffect(() => {
     const img = product?.colorImageMap.find((ele) => ele.color.hex === selectedColor);
-    setSelectedImage(img?.image?.asset?.url);
+    setImgMap(img?.images || []); 
+    console.log('img', img?.images);
   }, [selectedColor, product?.colorImageMap]);
+
 
   const handleThumbnailClick = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -59,15 +63,14 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
             {/* Thumbnail Images */}
             <div className="grid grid-cols-4 gap-4">
-              {product?.colorImageMap.map((ele, index) => (
+              {imgMap.map((ele, index) => (
                 <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
                   <Image
-                    src={ele.image?.asset?.url}
-                    alt={`${product?.name} - ${index + 1}`}
+                    src={ele?.asset?.url}
                     className="object-cover w-full h-full"
                     width={100}
                     height={100}
-                    onClick={() => handleThumbnailClick(ele.image?.asset?.url)}
+                    onClick={() => handleThumbnailClick(ele?.asset?.url)}
                   />
                 </div>
               ))}

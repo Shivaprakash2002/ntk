@@ -27,20 +27,24 @@ export const product = defineType({
             {
               name: "color",
               title: "Color",
-              type: "color", 
+              type: "color",
               options: {
-                disableAlpha: true, 
+                disableAlpha: true,
               },
             },
             {
-              name: "image",
-              title: "Image",
-              type: "image",
+              name: "images",
+              title: "Images",
+              type: "array",
+              of: [{ type: "image" }],
+              options: {
+                layout: "grid", // Optional: arranges the images in a grid view for better visualization
+              },
             },
           ],
         },
       ],
-    },
+    },    
     {
       name: "description",
       title: "Description",

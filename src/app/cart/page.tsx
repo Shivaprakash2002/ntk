@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { Minus, Plus, X, RefreshCw } from 'lucide-react';
 import { useCartContext } from '@/context/CartContext';
+import Link from 'next/link';
 
 export const CartPage: React.FC = () => {
   const { 
@@ -17,8 +18,8 @@ export const CartPage: React.FC = () => {
   const subtotal = cart.reduce((total, item) => 
     total + (item.product.price * item.quantity), 0);
   const shipping = subtotal > 100 ? 0 : 10;
-  const tax = subtotal * 0.1; // 10% tax
-  const total = subtotal + shipping + tax;
+ 
+  const total = subtotal + shipping;
 
   // Handle quantity update with loading state
   const handleQuantityUpdate = (productId: string, newQuantity: number) => {
@@ -56,7 +57,7 @@ export const CartPage: React.FC = () => {
                     {/* Product Image */}
                     <div className="relative w-24 h-24 flex-shrink-0">
                       <Image
-                        src={item.product?.images[0]?.asset.url}
+                        src={item.product?.colorImageMap[0]?.images[0]?.asset?.url}
                         alt={item.product.name}
                         fill
                         className="object-cover rounded"
@@ -71,7 +72,7 @@ export const CartPage: React.FC = () => {
                         {item.product.color && <span>• Color: {item.product.color}</span>}
                       </div> */}
                       <div className="text-lg font-medium mt-2">
-                        ${item.product.price.toFixed(2)}
+                        ₹{item.product.price.toFixed(2)}
                       </div>
                     </div>
 
@@ -122,28 +123,25 @@ export const CartPage: React.FC = () => {
               <div className="space-y-3 text-gray-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   {shipping === 0 ? (
                     <span className="text-green-600">Free</span>
                   ) : (
-                    <span>${shipping.toFixed(2)}</span>
+                    <span>₹{shipping.toFixed(2)}</span>
                   )}
                 </div>
-                <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
-                </div>
+               
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>₹{total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
-
+              <Link href="/checkout">
               <button 
                 className="w-full mt-6 bg-black text-white py-3 rounded-md hover:bg-gray-800 
                 transition-colors font-medium disabled:bg-gray-400"
@@ -151,10 +149,11 @@ export const CartPage: React.FC = () => {
               >
                 Proceed to Checkout
               </button>
+              </Link>
 
               {shipping > 0 && (
                 <p className="text-sm text-gray-500 mt-4">
-                  Add ${(100 - subtotal).toFixed(2)} more to get free shipping!
+                  Add ₹{(100 - subtotal).toFixed(2)} more to get free shipping!
                 </p>
               )}
             </div>

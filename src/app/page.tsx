@@ -12,6 +12,8 @@ import { defaultSlides } from "./constants";
 export default function Home() {
   const { products, categories } = useProductContext(); 
 
+  console.log('products',products);
+
  
   return (
     <div className="min-h-screen bg-gray-50">
@@ -38,7 +40,7 @@ export default function Home() {
               name={product.name}
               type={product.type}
               price={product.price}
-              image={product.colorImageMap[0].image.asset.url}
+              image={product.colorImageMap[0].images[0].asset.url}
               category={product.type}
             />
           ))}

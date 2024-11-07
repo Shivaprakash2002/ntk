@@ -20,7 +20,7 @@ export default function Page() {
             name={product.name}
             type={product.type}
             price={product.price}
-            image={product.colorImageMap[0].image.asset.url}
+            image={product.colorImageMap[0]?.images[0]?.asset.url}
             category={product.category?.name}
           />
           

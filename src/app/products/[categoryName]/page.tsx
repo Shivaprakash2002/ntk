@@ -35,7 +35,7 @@ export default function Page({ params }: { params: { categoryName: string } }) {
             name={product.name}
             type={product.type}
             price={product.price}
-            image={product.images?.[0]?.asset?.url}
+            image={product.colorImageMap[0].images[0].asset.url}
             category={product.category?.name}
           />
           

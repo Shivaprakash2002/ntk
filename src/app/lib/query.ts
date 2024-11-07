@@ -15,7 +15,7 @@ export const getAllProducts = async (): Promise<Product[]> => {
       description,
       colorImageMap[] {
         color { hex },
-        image {
+        images[] {
           asset-> {
             _id,
             url
