@@ -4,9 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useProductContext } from "@/context/ProductContext";
 import { ShoppingCart, Heart, Share2 } from "lucide-react";
 import Image from "next/image";
-
-import { useRouter } from 'next/navigation';
-
 import { useCartContext } from "@/context/CartContext";
 
 
@@ -38,6 +35,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
   const handleColorClick = (color) => {
     setSelectedColor(color);
   };
+
 
   return (
     <>
@@ -124,7 +122,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
             <div className="space-y-4">
               <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800"
                 onClick={() => addToCart(product._id, products)}>
-                <ShoppingCart />
+                                  <ShoppingCart />
                 Add to Cart
               </button>
               <button className="w-full border border-black py-3 px-6 rounded-md hover:bg-gray-50">
@@ -132,7 +130,6 @@ export default function Product({ params }: { params: { categoryName: string; pr
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </>

@@ -99,7 +99,7 @@ export const CartPage: React.FC<CartProps> = ({ params }) => {
                         {item.color && <span>• Color: {item.color}</span>}
                       </div>
                       <div className="text-lg font-medium mt-2">
-                        ${item.price.toFixed(2)}
+                      ₹{item.price.toFixed(2)}
                       </div>
                     </div>
 
@@ -150,24 +150,24 @@ export const CartPage: React.FC<CartProps> = ({ params }) => {
               <div className="space-y-3 text-gray-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   {shipping === 0 ? (
                     <span className="text-green-600">Free</span>
                   ) : (
-                    <span>${shipping.toFixed(2)}</span>
+                    <span>₹{shipping.toFixed(2)}</span>
                   )}
                 </div>
                 <div className="flex justify-between">
                   <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹{tax.toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>₹{total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -182,7 +182,7 @@ export const CartPage: React.FC<CartProps> = ({ params }) => {
 
               {shipping > 0 && (
                 <p className="text-sm text-gray-500 mt-4">
-                  Add ${(100 - subtotal).toFixed(2)} more to get free shipping!
+                  Add ₹{(100 - subtotal).toFixed(2)} more to get free shipping!
                 </p>
               )}
             </div>
