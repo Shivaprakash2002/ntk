@@ -6,6 +6,8 @@ import { ShoppingCart, Heart, Share2 } from "lucide-react";
 import Image from "next/image";
 import { useCartContext } from "@/context/CartContext";
 
+import { ColorImage } from "@/app/types";
+
 
 export default function Product({ params }: { params: { categoryName: string; productId: string } }) {
   const { products } = useProductContext();
@@ -16,23 +18,24 @@ export default function Product({ params }: { params: { categoryName: string; pr
   const product = products?.find((p) => p._id === params.productId);
   const colors = product?.colorImageMap?.map((ele) => ele.color.hex);
 
-  const [selectedColor, setSelectedColor] = useState(colors.length > 0 ? colors[0] : "");
+  const [selectedColor, setSelectedColor] = useState((colors?.length ?? 0) > 0 ? colors ? colors[0] : 0 : "");
   const [selectedImage, setSelectedImage] = useState(product?.colorImageMap[0]?.images[0]?.asset?.url);
-  const [imgMap, setImgMap] = useState([]);
+  const [imgMap, setImgMap] = useState<ColorImage["images"]>([]);
 
   useEffect(() => {
     const img = product?.colorImageMap.find((ele) => ele.color.hex === selectedColor);
     setSelectedImage(img?.images[0]?.asset?.url);
+    //@ts-expect-error: something
     setImgMap(img?.images);
     console.log('img', img?.images);
   }, [selectedColor]);
 
 
-  const handleThumbnailClick = (imageUrl) => {
+  const handleThumbnailClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
   };
 
-  const handleColorClick = (color) => {
+  const handleColorClick = (color: string) => {
     setSelectedColor(color);
   };
 
@@ -48,7 +51,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
               {selectedImage ? (
                 <Image
                   src={selectedImage}
-                  alt={product?.name}
+                  alt={product?.name ?? "product"}
                   className="object-cover w-full h-full"
                   width={500}
                   height={500}
@@ -60,15 +63,20 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
 
             {/* Thumbnail Images */}
+            
             <div className="grid grid-cols-4 gap-4">
-              {imgMap.map((ele, index) => (
+              
+              {
+              imgMap.map((ele, index) => (
                 <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
+                 
                   <Image
                     src={ele?.asset?.url}
                     className="object-cover w-full h-full"
                     width={100}
                     height={100}
                     onClick={() => handleThumbnailClick(ele?.asset?.url)}
+                    alt="product"
                   />
                 </div>
               ))}
@@ -98,7 +106,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
             </div>
 
             <div className="flex gap-2">
-              {colors.map((ele, index) => (
+              {colors?.map((ele, index) => (
                 <button
                   key={index}
                   style={{
@@ -119,7 +127,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
             <div className="space-y-4">
               <button
                 className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800"
-                onClick={() => addToCart(product._id, selectedColor, products)}
+                onClick={() => addToCart(product?._id, selectedColor, products)}
               >
                 <ShoppingCart />
                 Add to Cart

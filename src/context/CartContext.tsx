@@ -2,25 +2,24 @@
 import { Product } from "@/app/types";
 import { createContext, ReactNode, useContext, useState, useCallback, useEffect } from "react";
 
-interface CartItem {
+export interface CartItem {
+  selectedColorImage?: {
+    asset: { url: string };
+  };
   selectedColor: string;
   product: Product;
   quantity: number;
-  selectedColorImage?: {
-    asset : string
-    url:string;
-  };
 }
 
 interface CartContextProps {
   cart: CartItem[];
-  addToCart: (productId: string, products: Product[]) => void;
+  addToCart: (productId: string | undefined, color: string | number, products: Product[] | null) => void;
   removeFromCart: (productId: string, selectedColor: string) => void;
-  updateQuantity: (productId: string, selectedColor: string, quantity: number) => void;
+  updateQuantity: (productId: string, selectedColor: string | number, quantity: number) => void;
   emptyCart: () => void;
   getCartTotal: () => number;
   getCartItemsCount: () => number;
-  setCart: (cart: CartItem[]) => void; // Add parameter to setCart
+  setCart: (cart: CartItem[]) => void;
 }
 
 const CART_STORAGE_KEY = 'shopping-cart';
@@ -28,23 +27,15 @@ const CART_STORAGE_KEY = 'shopping-cart';
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize with empty array to avoid hydration mismatch
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  console.log(
-    'cardcontext',cart
-  );
-  
-  // Handle localStorage in a separate useEffect
   useEffect(() => {
-    // Only run this effect once on mount
     const savedCart = localStorage.getItem(CART_STORAGE_KEY);
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
   }, []);
 
-  // Save to localStorage whenever cart changes
   useEffect(() => {
     if (cart.length > 0) {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
@@ -53,69 +44,89 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [cart]);
 
-  const addToCart = useCallback((productId: string, color: string, products: Product[]) => {
-    const product = products?.find((product) => product._id === productId);
+  const addToCart = useCallback((
+    productId: string | undefined, 
+    color: string | number, 
+    products: Product[] | null
+  ) => {
+    if (!productId || !products) {
+      console.log("Invalid product ID or products list");
+      return;
+    }
+
+    const product = products.find((product) => product._id === productId);
     
     if (!product) {
-        console.log("Product not found");
-        return;
+      console.log("Product not found");
+      return;
     }
+
+    const colorString = color.toString();
 
     setCart(prevCart => {
-        // Find the index of the existing cart item with the same product ID and selected color
-        const existingItemIndex = prevCart.findIndex(
-            item => item.product._id === productId && item.selectedColor === color
-        );
+      const existingItemIndex = prevCart.findIndex(
+        item => item.product._id === productId && item.selectedColor === colorString
+      );
 
-        if (existingItemIndex >= 0) {
-            // Increase quantity for the same product and color
-            const newCart = [...prevCart];
-            newCart[existingItemIndex] = {
-                ...newCart[existingItemIndex],
-                quantity: newCart[existingItemIndex].quantity + 1,
-                selectedColor: color // Keep the selected color here
-            };
-            return newCart;
-        }
+      if (existingItemIndex >= 0) {
+        const newCart = [...prevCart];
+        newCart[existingItemIndex] = {
+          ...newCart[existingItemIndex],
+          quantity: newCart[existingItemIndex].quantity + 1,
+          selectedColor: colorString
+        };
+        return newCart;
+      }
 
-        // If no existing item with the same color, add a new cart item with the color
-        return [...prevCart, { product, quantity: 1, selectedColor: color }];
+      return [...prevCart, { 
+        product, 
+        quantity: 1, 
+        selectedColor: colorString 
+      }];
     });
-}, []);
+  }, []);
 
+  const removeFromCart = useCallback((productId: string, selectedColor: string) => {
+    setCart(prevCart => prevCart.filter(item => 
+      item.product._id !== productId || item.selectedColor !== selectedColor
+    ));
+  }, []);
 
+  const updateQuantity = useCallback((
+    productId: string, 
+    selectedColor: string | number, 
+    quantity: number
+  ) => {
+    const colorString = selectedColor.toString();
+    
+    setCart(prevCart => {
+      if (quantity <= 0) {
+        return prevCart.filter(item => 
+          item.product._id !== productId || item.selectedColor !== colorString
+        );
+      }
 
-const removeFromCart = useCallback((productId: string, selectedColor: string) => {
-  setCart(prevCart => prevCart.filter(item => item.product._id !== productId || item.selectedColor !== selectedColor));
-}, []);
+      return prevCart.map(item => 
+        item.product._id === productId && item.selectedColor === colorString
+          ? { ...item, quantity } 
+          : item
+      );
+    });
+  }, []);
 
-const updateQuantity = useCallback((productId: string, selectedColor: string, quantity: number) => {
-  setCart(prevCart => {
-    if (quantity <= 0) {
-      return prevCart.filter(item => item.product._id !== productId || item.selectedColor !== selectedColor);
-    }
+  const getCartTotal = useCallback(() => {
+    return cart.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+  }, [cart]);
 
-    return prevCart.map(item => 
-      item.product._id === productId && item.selectedColor === selectedColor
-        ? { ...item, quantity } 
-        : item
-    );
-  });
-}, []);
+  const getCartItemsCount = useCallback(() => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  }, [cart]);
 
-const getCartTotal = useCallback(() => {
-  return cart.reduce((total, item) => total + (item.product.price * item.quantity), 0);
-}, [cart]);
+  const emptyCart = useCallback(() => {
+    setCart([]);
+  }, []);
 
-const getCartItemsCount = useCallback(() => {
-  return cart.reduce((total, item) => total + item.quantity, 0);
-}, [cart]);
-
-const emptyCart = useCallback(() => {
-  setCart([]);
-}, []);
-
-  const value = {
+  const value: CartContextProps = {
     cart,
     addToCart,
     setCart,

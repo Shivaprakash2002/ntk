@@ -1,18 +1,19 @@
-export interface Image {
-  asset: {
+export interface Image{
+  asset: ImageAsset
+}
+
+export interface ImageAsset {
     _id: string;
     url: string;
-  };
+}
+export interface ColorImage {
+  images: {asset: ImageAsset}[];
+  color: {hex: string}
 }
 
 export interface Product {
-  colorImageMap: {
-    images: string;
-    color: string;
-    imageUrl: string;
-    hex: string;
-  }[]; // Example if it's an array of objects with specific properties
-  category: string;
+  colorImageMap: ColorImage[]; // Example if it's an array of objects with specific properties
+  category: {name: string};
   _id: string;
   name: string;
   type: string;
@@ -27,7 +28,7 @@ export interface ProductCardProps {
   type: string;
   price: number;
   image?: string;
-  colorImageMap?: string[];
+  colorImageMap?: ColorImage[];
 }
 
 export interface ProductTypeCardProps {

@@ -13,20 +13,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides }) => {
   const [isPaused, setIsPaused] = useState(false);
 
   // Function to handle next slide with debounce
-  const nextSlide = () => {
-    if (!isAnimating) {
-      setIsAnimating(true);
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-      // Reset animation flag after transition completes
-      setTimeout(() => setIsAnimating(false), 700);
-    }
-  };
+  
+   const  nextSlide = () => {
+      if (!isAnimating) {
+        setIsAnimating(true);
+        setCurrentSlide((prev) => (prev + 1) % (slides?.length ?? 0));
+        // Reset animation flag after transition completes
+        setTimeout(() => setIsAnimating(false), 700);
+      }
+    };
+
+  
 
   // Function to handle previous slide with debounce
   const prevSlide = () => {
     if (!isAnimating) {
       setIsAnimating(true);
-      setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+      setCurrentSlide((prev) => (prev - 1 +( slides?.length ?? 0)) % (slides?.length ?? 0));
       // Reset animation flag after transition completes
       setTimeout(() => setIsAnimating(false), 700);
     }
@@ -61,10 +64,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides }) => {
         className="h-full transition-transform duration-700 ease-in-out flex"
         style={{
           transform: `translateX(-${currentSlide * 100}%)`,
-          width: `${slides.length * 100}%`,
+          width: `${(slides?.length ?? 0) * 100}%`,
         }}
       >
-        {slides.map((slide, index) => (
+        {slides?.map((slide, index) => (
           <div key={index} className="relative w-full h-full flex-shrink-0">
             <Image
               src={slide.image}
@@ -126,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides }) => {
 
       {/* Dots Navigation */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {slides.map((_, index) => (
+        {slides?.map((_, index) => (
           <button
             key={index}
             onClick={() => {
