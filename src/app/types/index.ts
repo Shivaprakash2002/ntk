@@ -6,14 +6,21 @@ export interface Image {
 }
 
 export interface Product {
+  colorImageMap: {
+    images: string;
+    color: string;
+    imageUrl: string;
+    hex: string;
+  }[]; // Example if it's an array of objects with specific properties
   category: string;
   _id: string;
   name: string;
   type: string;
   price: number;
   description: string;
-  images: Image[]; 
+  images: Image[];
 }
+
 
 export interface ProductCardProps {
   name: string;

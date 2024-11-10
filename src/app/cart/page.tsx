@@ -1,11 +1,11 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Minus, Plus, X, RefreshCw } from 'lucide-react';
+import { Minus, Plus, X, } from 'lucide-react';
 import { useCartContext } from '@/context/CartContext';
 import Link from 'next/link';
 
-export const CartPage: React.FC = () => {
+const CartPage = () => {
   const { 
     cart, 
     removeFromCart, 
@@ -14,7 +14,6 @@ export const CartPage: React.FC = () => {
   } = useCartContext();
   
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
-  const [SelectedColor, setSelectedColor] = useState<string | null>(null);
 
   // Calculate totals
   const subtotal = cart.reduce((total, item) => 
@@ -26,8 +25,6 @@ export const CartPage: React.FC = () => {
   // Handle quantity update with loading state
   const handleQuantityUpdate = (productId: string, selectedColor: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setIsUpdating(productId);
-    setSelectedColor(selectedColor);
     
     updateQuantity(productId, selectedColor, newQuantity);
 
@@ -50,7 +47,7 @@ export const CartPage: React.FC = () => {
   }) as CartItem[];
 
   setCart(updatedCart);
-}, []);
+}, [cart,setCart]);
 
 
 console.log('newCart',cart)
@@ -114,13 +111,6 @@ console.log('newCart',cart)
                         <Plus size={16} />
                       </button>
                     </div>
-
-                    {/* Update Indicator */}
-                    {/* {isUpdating === item.product._id && (
-                      <div className="w-6 h-6 animate-spin">
-                        <RefreshCw size={24} />
-                      </div>
-                    )} */}
 
                     {/* Remove Button */}
                     <button 

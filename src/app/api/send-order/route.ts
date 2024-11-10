@@ -1,6 +1,37 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+interface CustomerDetails {
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  additionalNotes?: string;
+}
+
+interface Product {
+  name: string;
+  price: number;
+}
+
+interface Item {
+  selectedColorImage: {
+    asset: {
+      url: string;
+    };
+  };
+  product: Product;
+  quantity: number;
+}
+
+interface OrderDetails {
+  items: Item[];
+  total: number;
+}
+
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
@@ -13,7 +44,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Create HTML for order items
-const createItemsHTML = (items: any[]) => {
+const createItemsHTML = (items: Item[]): string => {
   return items.map(item => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
@@ -28,8 +59,7 @@ const createItemsHTML = (items: any[]) => {
   `).join('');
 };
 
-// Admin email template
-const createAdminEmailHTML = (customerDetails: any, orderDetails: any) => `
+const createAdminEmailHTML = (customerDetails: CustomerDetails, orderDetails: OrderDetails): string => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -44,7 +74,6 @@ const createAdminEmailHTML = (customerDetails: any, orderDetails: any) => `
         <h1 style="color: #333; margin: 0;">New Order Received!</h1>
       </td>
     </tr>
-    
     <tr>
       <td style="padding: 20px;">
         <h2 style="color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px;">Customer Details</h2>
@@ -74,7 +103,6 @@ const createAdminEmailHTML = (customerDetails: any, orderDetails: any) => `
             <td>${customerDetails.zipCode}</td>
           </tr>
         </table>
-
         <h2 style="color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px;">Order Details</h2>
         <table width="100%" style="margin-bottom: 20px;">
           ${createItemsHTML(orderDetails.items)}
@@ -83,12 +111,10 @@ const createAdminEmailHTML = (customerDetails: any, orderDetails: any) => `
             <td style="padding: 12px;"><strong>₹${orderDetails.total.toFixed(2)}</strong></td>
           </tr>
         </table>
-
         <h2 style="color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px;">Additional Notes</h2>
         <p style="margin-bottom: 20px;">${customerDetails.additionalNotes || 'None'}</p>
       </td>
     </tr>
-
     <tr>
       <td style="background-color: #f8f9fa; padding: 20px; text-align: center; color: #666;">
         <p style="margin: 0;">This is an automated email from your e-commerce system</p>
@@ -99,8 +125,7 @@ const createAdminEmailHTML = (customerDetails: any, orderDetails: any) => `
 </html>
 `;
 
-// Customer email template
-const createCustomerEmailHTML = (customerDetails: any, orderDetails: any) => `
+const createCustomerEmailHTML = (customerDetails: CustomerDetails, orderDetails: OrderDetails): string => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -115,12 +140,10 @@ const createCustomerEmailHTML = (customerDetails: any, orderDetails: any) => `
         <h1 style="color: white; margin: 0;">Thank You for Your Order!</h1>
       </td>
     </tr>
-    
     <tr>
       <td style="padding: 20px;">
         <p style="font-size: 16px; color: #444;">Dear ${customerDetails.fullName},</p>
         <p style="font-size: 16px; color: #444;">We've received your order and we're working on it. Here's a summary of your purchase:</p>
-        
         <h2 style="color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px;">Order Summary</h2>
         <table width="100%" style="margin-bottom: 20px;">
           ${createItemsHTML(orderDetails.items)}
@@ -129,7 +152,6 @@ const createCustomerEmailHTML = (customerDetails: any, orderDetails: any) => `
             <td style="padding: 12px;"><strong>₹${orderDetails.total.toFixed(2)}</strong></td>
           </tr>
         </table>
-
         <h2 style="color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px;">Shipping Details</h2>
         <table width="100%" style="margin-bottom: 20px;">
           <tr>
@@ -145,13 +167,11 @@ const createCustomerEmailHTML = (customerDetails: any, orderDetails: any) => `
             <td>${customerDetails.zipCode}</td>
           </tr>
         </table>
-
         <div style="background-color: #f8f9fa; padding: 20px; border-radius: 4px; margin-top: 20px;">
           <p style="margin: 0; color: #666;">We'll process your order soon and send you updates about the status. If you have any questions, please don't hesitate to contact us.</p>
         </div>
       </td>
     </tr>
-
     <tr>
       <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
         <p style="margin: 0; color: #666;">Best regards,<br>Your Store Name</p>
@@ -163,11 +183,14 @@ const createCustomerEmailHTML = (customerDetails: any, orderDetails: any) => `
 </html>
 `;
 
+
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { customerDetails, orderDetails } = body;
+    const { customerDetails, orderDetails }: { customerDetails: CustomerDetails, orderDetails: OrderDetails } = body;
 
+    // Log customerDetails and orderDetails for debugging
     console.log('customerDetails', customerDetails);
     console.log('orderDetails', orderDetails);
 
@@ -178,7 +201,7 @@ export async function POST(request: Request) {
       subject: `New Order from ${customerDetails.fullName}`,
       html: createAdminEmailHTML(customerDetails, orderDetails),
     });
-    console.log('Admin email sent successfully',res);
+    console.log('Admin email sent successfully', res);
 
     // Send confirmation email to customer
     await transporter.sendMail({
@@ -198,3 +221,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

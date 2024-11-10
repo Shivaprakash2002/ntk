@@ -6,7 +6,10 @@ interface CartItem {
   selectedColor: string;
   product: Product;
   quantity: number;
-  selectedColorImage?: any;
+  selectedColorImage?: {
+    asset : string
+    url:string;
+  };
 }
 
 interface CartContextProps {

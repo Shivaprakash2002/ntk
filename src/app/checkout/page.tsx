@@ -82,7 +82,7 @@ export default function CheckoutForm() {
           <div key={item.product._id} className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-4">
               <img
-                src={item.selectedColorImage.asset.url}
+                src={item?.selectedColorImage?.asset?.url}
                 alt={`${item.product.name} - ${item.selectedColor}`}
                 className="w-12 h-12 object-cover rounded-md" // Adjust size as needed
               />

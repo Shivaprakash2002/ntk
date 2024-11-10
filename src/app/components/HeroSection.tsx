@@ -6,9 +6,6 @@ import { HeroSectionProps } from "../types";
 
 
 
-
-
-
 export const HeroSection: React.FC<HeroSectionProps> = ({ slides }) => {
   // State for tracking current slide and animation status
   const [currentSlide, setCurrentSlide] = useState(0);
