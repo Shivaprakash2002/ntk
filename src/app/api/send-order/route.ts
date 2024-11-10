@@ -17,7 +17,7 @@ const createItemsHTML = (items: any[]) => {
   return items.map(item => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
-        <img src="${item.product.images[0].asset.url}" alt="${item.product.name}" style="width: 80px; height: auto; border-radius: 4px;">
+        <img src="${item.selectedColorImage.asset.url}" alt="${item.product.name}" style="width: 80px; height: auto; border-radius: 4px;">
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
         <h3 style="margin: 0; font-size: 16px;">${item.product.name}</h3>
@@ -80,7 +80,7 @@ const createAdminEmailHTML = (customerDetails: any, orderDetails: any) => `
           ${createItemsHTML(orderDetails.items)}
           <tr>
             <td colspan="3" style="padding: 12px; text-align: right;"><strong>Total:</strong></td>
-            <td style="padding: 12px;"><strong>$${orderDetails.total.toFixed(2)}</strong></td>
+            <td style="padding: 12px;"><strong>₹${orderDetails.total.toFixed(2)}</strong></td>
           </tr>
         </table>
 
@@ -126,7 +126,7 @@ const createCustomerEmailHTML = (customerDetails: any, orderDetails: any) => `
           ${createItemsHTML(orderDetails.items)}
           <tr>
             <td colspan="3" style="padding: 12px; text-align: right;"><strong>Total:</strong></td>
-            <td style="padding: 12px;"><strong>$${orderDetails.total.toFixed(2)}</strong></td>
+            <td style="padding: 12px;"><strong>₹${orderDetails.total.toFixed(2)}</strong></td>
           </tr>
         </table>
 
@@ -168,13 +168,17 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { customerDetails, orderDetails } = body;
 
+    console.log('customerDetails', customerDetails);
+    console.log('orderDetails', orderDetails);
+
     // Send email to store owner
-    await transporter.sendMail({
+    const res = await transporter.sendMail({
       from: process.env.SMTP_USER,
       to: "nambathunikadai@gmail.com",
       subject: `New Order from ${customerDetails.fullName}`,
       html: createAdminEmailHTML(customerDetails, orderDetails),
     });
+    console.log('Admin email sent successfully',res);
 
     // Send confirmation email to customer
     await transporter.sendMail({
@@ -183,6 +187,7 @@ export async function POST(request: Request) {
       subject: 'Order Confirmation',
       html: createCustomerEmailHTML(customerDetails, orderDetails),
     });
+    console.log('Customer email sent successfully');
 
     return NextResponse.json({ success: true });
   } catch (error) {

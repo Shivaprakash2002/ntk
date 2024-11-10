@@ -10,12 +10,11 @@ import { useCartContext } from "@/context/CartContext";
 export default function Product({ params }: { params: { categoryName: string; productId: string } }) {
   const { products } = useProductContext();
   const { addToCart } = useCartContext();
-  const router = useRouter();
 
   console.log('products', products);
 
   const product = products?.find((p) => p._id === params.productId);
-  const colors = product?.colorImageMap?.map((ele) => ele.color.hex) || [];
+  const colors = product?.colorImageMap?.map((ele) => ele.color.hex);
 
   const [selectedColor, setSelectedColor] = useState(colors.length > 0 ? colors[0] : "");
   const [selectedImage, setSelectedImage] = useState(product?.colorImageMap[0]?.images[0]?.asset?.url);
@@ -23,9 +22,10 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
   useEffect(() => {
     const img = product?.colorImageMap.find((ele) => ele.color.hex === selectedColor);
-    setImgMap(img?.images || []); 
+    setSelectedImage(img?.images[0]?.asset?.url);
+    setImgMap(img?.images);
     console.log('img', img?.images);
-  }, [selectedColor, product?.colorImageMap]);
+  }, [selectedColor]);
 
 
   const handleThumbnailClick = (imageUrl) => {
@@ -84,7 +84,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold">${product?.price}</p>
+                <p className="text-2xl font-bold">₹{product?.price}</p>
                 <p className="text-green-600 text-sm">In Stock</p>
               </div>
               <div className="flex gap-4">
@@ -111,20 +111,20 @@ export default function Product({ params }: { params: { categoryName: string; pr
                 ></button>
               ))}
             </div>
-
-
-
             <div>
               <h2 className="font-semibold mb-2">Description</h2>
               <p className="text-gray-600">{product?.description}</p>
             </div>
 
             <div className="space-y-4">
-              <button className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800"
-                onClick={() => addToCart(product._id, products)}>
-                                  <ShoppingCart />
+              <button
+                className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800"
+                onClick={() => addToCart(product._id, selectedColor, products)}
+              >
+                <ShoppingCart />
                 Add to Cart
               </button>
+
               <button className="w-full border border-black py-3 px-6 rounded-md hover:bg-gray-50">
                 Buy Now
               </button>

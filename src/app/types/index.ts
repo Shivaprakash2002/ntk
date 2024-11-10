@@ -20,6 +20,7 @@ export interface ProductCardProps {
   type: string;
   price: number;
   image?: string;
+  colorImageMap?: string[];
 }
 
 export interface ProductTypeCardProps {

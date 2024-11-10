@@ -6,6 +6,9 @@ import { useState } from 'react';
 
 export default function CheckoutForm() {
   const { cart, getCartTotal, emptyCart } = useCartContext();
+
+  console.log('CheckoutCart', cart);
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -15,6 +18,7 @@ export default function CheckoutForm() {
     zipCode: '',
     additionalNotes: ''
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -70,13 +74,20 @@ export default function CheckoutForm() {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6">Checkout</h2>
-      
+
       {/* Order Summary */}
       <div className="mb-8 p-4 bg-gray-50 rounded-md">
         <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
         {cart.map((item) => (
-          <div key={item.product._id} className="flex justify-between mb-2">
-            <span>{item.product.title} x {item.quantity}</span>
+          <div key={item.product._id} className="flex justify-between items-center mb-2">
+            <div className="flex items-center gap-4">
+              <img
+                src={item.selectedColorImage.asset.url}
+                alt={`${item.product.name} - ${item.selectedColor}`}
+                className="w-12 h-12 object-cover rounded-md" // Adjust size as needed
+              />
+              <span>{item.product.name} x {item.quantity}</span>
+            </div>
             <span>₹{(item.product.price * item.quantity).toFixed(2)}</span>
           </div>
         ))}
@@ -87,6 +98,7 @@ export default function CheckoutForm() {
           </div>
         </div>
       </div>
+
 
       {/* Checkout Form */}
       <form onSubmit={handleSubmit} className="space-y-4">

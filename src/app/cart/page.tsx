@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Minus, Plus, X, RefreshCw } from 'lucide-react';
 import { useCartContext } from '@/context/CartContext';
@@ -10,9 +10,11 @@ export const CartPage: React.FC = () => {
     cart, 
     removeFromCart, 
     updateQuantity,
+    setCart,
   } = useCartContext();
   
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
+  const [SelectedColor, setSelectedColor] = useState<string | null>(null);
 
   // Calculate totals
   const subtotal = cart.reduce((total, item) => 
@@ -22,19 +24,37 @@ export const CartPage: React.FC = () => {
   const total = subtotal + shipping;
 
   // Handle quantity update with loading state
-  const handleQuantityUpdate = (productId: string, newQuantity: number) => {
+  const handleQuantityUpdate = (productId: string, selectedColor: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     setIsUpdating(productId);
+    setSelectedColor(selectedColor);
     
-    updateQuantity(productId, newQuantity);
+    updateQuantity(productId, selectedColor, newQuantity);
 
     // Simulate API call
     setTimeout(() => setIsUpdating(null), 500);
   };
 
+ console.log('oldCart',cart)
+ 
+ useEffect(() => {
+  const updatedCart = cart.map((element) => {
+    const selectedColorImage = element.product.colorImageMap.find(
+      (colorObj) => colorObj.color.hex === element.selectedColor
+    );
+
+    return {
+      ...element,
+      selectedColorImage: selectedColorImage ? selectedColorImage.images[0] : null,
+    };
+  }) as CartItem[];
+
+  setCart(updatedCart);
+}, []);
 
 
-  console.log(cart)
+console.log('newCart',cart)
+
   return (
     <div className="min-h-screen bg-gray-300 py-8">
       <div className="max-w-6xl mx-auto px-4">
@@ -48,16 +68,16 @@ export const CartPage: React.FC = () => {
                 <p className="text-gray-900 text-lg">Your cart is empty</p>
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow">
+              <div className="shadow">
                 {cart.map((item) => (
                   <div 
                     key={item.product._id}
-                    className="flex items-center gap-4 p-4 border-b last:border-b-0"
+                    className="flex items-center gap-4 p-4 border-b last:border-b-0 bg-white mb-4 rounded-lg"
                   >
                     {/* Product Image */}
                     <div className="relative w-24 h-24 flex-shrink-0">
                       <Image
-                        src={item.product?.colorImageMap[0]?.images[0]?.asset?.url}
+                        src={item.selectedColorImage?.asset?.url}
                         alt={item.product.name}
                         fill
                         className="object-cover rounded"
@@ -79,7 +99,7 @@ export const CartPage: React.FC = () => {
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleQuantityUpdate(item.product._id, item.quantity - 1)}
+                        onClick={() => handleQuantityUpdate(item.product._id, item.selectedColor, item.quantity - 1)}
                         className="p-1 rounded hover:bg-gray-100"
                         disabled={isUpdating === item.product._id}
                       >
@@ -87,7 +107,7 @@ export const CartPage: React.FC = () => {
                       </button>
                       <span className="w-8 text-center">{item.quantity}</span>
                       <button
-                        onClick={() => handleQuantityUpdate(item.product._id, item.quantity + 1)}
+                        onClick={() => handleQuantityUpdate(item.product._id, item.selectedColor, item.quantity + 1)}
                         className="p-1 rounded hover:bg-gray-100"
                         disabled={isUpdating === item.product._id}
                       >
@@ -96,15 +116,15 @@ export const CartPage: React.FC = () => {
                     </div>
 
                     {/* Update Indicator */}
-                    {isUpdating === item.product._id && (
+                    {/* {isUpdating === item.product._id && (
                       <div className="w-6 h-6 animate-spin">
                         <RefreshCw size={24} />
                       </div>
-                    )}
+                    )} */}
 
                     {/* Remove Button */}
-                    <button
-                      onClick={() => removeFromCart(item.product._id)}
+                    <button 
+                      onClick={() => removeFromCart(item.product._id , item.selectedColor)}
                       className="p-2 text-gray-400 hover:text-gray-600"
                     >
                       <X size={20} />
