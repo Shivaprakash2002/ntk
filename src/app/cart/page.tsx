@@ -56,10 +56,10 @@ const CartPage = () => {
   // Update the cart with the new cart items
  // @ts-expect-error: CartItem type requires specific structure for selectedColorImage, which is different from the current one.
   setCart(updatedCart);
-}, [cart, setCart]);
+});
 
 
-console.log('newCart',cart)
+
 
   return (
     <div className="min-h-screen bg-gray-300 py-8">
@@ -84,7 +84,7 @@ console.log('newCart',cart)
                     <div className="relative w-24 h-24 flex-shrink-0">
                       <Image
                       // @ts-expect-error: for src
-                        src={item.selectedColorImage?.asset?.url}
+                        src={item.selectedColorImage?.asset}
                         alt={item.product.name}
                         fill
                         className="object-cover rounded"

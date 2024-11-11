@@ -1,5 +1,6 @@
 "use client"
 import { useCartContext } from '@/context/CartContext';
+import Image from 'next/image';
 import React from 'react';
 
 import { useState } from 'react';
@@ -81,10 +82,13 @@ export default function CheckoutForm() {
         {cart.map((item) => (
           <div key={item.product._id} className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-4">
-              <img
-                src={item?.selectedColorImage?.asset?.url}
+              <Image
+                //@ts-expect-error: src
+                src={item?.selectedColorImage?.asset}
                 alt={`${item.product.name} - ${item.selectedColor}`}
                 className="w-12 h-12 object-cover rounded-md" // Adjust size as needed
+                width={48}
+                height={48}
               />
               <span>{item.product.name} x {item.quantity}</span>
             </div>
