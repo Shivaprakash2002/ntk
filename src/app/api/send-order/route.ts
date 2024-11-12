@@ -48,13 +48,13 @@ const createItemsHTML = (items: Item[]): string => {
   return items.map(item => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
-        <img src="${item.selectedColorImage.asset.url}" alt="${item.product.name}" style="width: 80px; height: auto; border-radius: 4px;">
+        <img src="${item.selectedColorImage.asset}" alt="${item.product.name}" style="width: 80px; height: auto; border-radius: 4px;">
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">
         <h3 style="margin: 0; font-size: 16px;">${item.product.name}</h3>
       </td>
-      <td style="padding: 12px; border-bottom: 1px solid #eee;">x${item.quantity}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #eee;">₹${(item.product.price * item.quantity).toFixed(2)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #eee;">x${item?.quantity ?? 1}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #eee;">₹${(item.product.price * (item?.quantity ?? 1)).toFixed(2)}</td>
     </tr>
   `).join('');
 };
@@ -193,6 +193,8 @@ export async function POST(request: Request) {
     // Log customerDetails and orderDetails for debugging
     console.log('customerDetails', customerDetails);
     console.log('orderDetails', orderDetails);
+    console.log('orderDetails Product', orderDetails?.items[0].product);
+    console.log("selectedColorImage: ", orderDetails.items[0].selectedColorImage);
 
     // Send email to store owner
     const res = await transporter.sendMail({
@@ -202,6 +204,7 @@ export async function POST(request: Request) {
       html: createAdminEmailHTML(customerDetails, orderDetails),
     });
     console.log('Admin email sent successfully', res);
+    console.log("Customer Email: ", customerDetails.email);
 
     // Send confirmation email to customer
     await transporter.sendMail({
