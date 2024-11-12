@@ -2,76 +2,13 @@
 import { useCartContext } from '@/context/CartContext';
 import Image from 'next/image';
 import React from 'react';
-
-import { useState } from 'react';
+import useCheckout from '../lib/hooks/useCheckOut';
 
 export default function CheckoutForm() {
-  const { cart, getCartTotal, emptyCart } = useCartContext();
 
-  console.log('CheckoutCart', cart);
+  const { handleSubmit, isSubmitting,  submitStatus, handleInputChange, formData} = useCheckout();
 
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    zipCode: '',
-    additionalNotes: ''
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-
-    try {
-      const response = await fetch('/api/send-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          customerDetails: formData,
-          orderDetails: {
-            items: cart,
-            total: getCartTotal(),
-          }
-        }),
-      });
-
-      if (!response.ok) throw new Error('Failed to submit order');
-
-      setSubmitStatus('success');
-      emptyCart();
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        zipCode: '',
-        additionalNotes: ''
-      });
-    } catch (error) {
-      setSubmitStatus('error');
-      console.error('Error submitting order:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+  const { cart, getCartTotal } = useCartContext();
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6">Checkout</h2>

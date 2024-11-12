@@ -32,7 +32,7 @@ const CartPage = () => {
     setTimeout(() => setIsUpdating(null), 500);
   };
 
- console.log('oldCart',cart)
+
  
  useEffect(() => {
   const updatedCart = cart.map((element) => {
@@ -56,7 +56,7 @@ const CartPage = () => {
   // Update the cart with the new cart items
  // @ts-expect-error: CartItem type requires specific structure for selectedColorImage, which is different from the current one.
   setCart(updatedCart);
-});
+}, []);
 
 
 

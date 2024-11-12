@@ -7,11 +7,13 @@ import Image from "next/image";
 import { useCartContext } from "@/context/CartContext";
 
 import { ColorImage } from "@/app/types";
+import useCheckout from "@/app/lib/hooks/useCheckOut";
 
 
 export default function Product({ params }: { params: { categoryName: string; productId: string } }) {
   const { products } = useProductContext();
   const { addToCart } = useCartContext();
+  const { handleSubmit } = useCheckout();
 
   console.log('products', products);
 
@@ -21,6 +23,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
   const [selectedColor, setSelectedColor] = useState((colors?.length ?? 0) > 0 ? colors ? colors[0] : 0 : "");
   const [selectedImage, setSelectedImage] = useState(product?.colorImageMap[0]?.images[0]?.asset?.url);
   const [imgMap, setImgMap] = useState<ColorImage["images"]>([]);
+ 
 
   useEffect(() => {
     const img = product?.colorImageMap.find((ele) => ele.color.hex === selectedColor);
@@ -38,6 +41,8 @@ export default function Product({ params }: { params: { categoryName: string; pr
   const handleColorClick = (color: string) => {
     setSelectedColor(color);
   };
+
+  
 
 
   return (
@@ -67,7 +72,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
             <div className="grid grid-cols-4 gap-4">
               
               {
-              imgMap.map((ele, index) => (
+              imgMap?.map((ele, index) => (
                 <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden cursor-pointer">
                  
                   <Image
@@ -133,7 +138,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
                 Add to Cart
               </button>
 
-              <button className="w-full border border-black py-3 px-6 rounded-md hover:bg-gray-50">
+              <button className="w-full border border-black py-3 px-6 rounded-md hover:bg-gray-50 cursor-pointer" onClick={(e) => handleSubmit(e, true, product?._id, selectedColor)}>
                 Buy Now
               </button>
             </div>
