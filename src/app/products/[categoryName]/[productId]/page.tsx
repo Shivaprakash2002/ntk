@@ -60,6 +60,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
     setIsProcessing(true);
     
     try {
+      
       await handleSubmit(e, true, product?._id, selectedColor, formData);
       setShowCheckout(false);
       setFormData({

@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useCartContext } from "@/context/CartContext";
 import { useProductContext } from "@/context/ProductContext";
 
-interface UseCheckoutReturn {
-  formData: {
+
+interface formDataType {
+  
     fullName: string;
     email: string;
     phone: string;
@@ -11,7 +12,12 @@ interface UseCheckoutReturn {
     city: string;
     zipCode: string;
     additionalNotes: string;
-  };
+  
+
+}
+
+interface UseCheckoutReturn {
+  formData: formDataType;
   isSubmitting: boolean;
   submitStatus: "idle" | "success" | "error";
   handleInputChange: (
@@ -22,7 +28,7 @@ interface UseCheckoutReturn {
     isBuyNow?: boolean,
     selectedProductId?: string,
     selectedColor?: string | number,
-    formData?: FormData
+    formData?:  formDataType
   ) => Promise<void>;
 }
 
@@ -60,7 +66,7 @@ const useCheckout = (): UseCheckoutReturn => {
     isBuyNow: boolean = false,
     selectedProductId?: string,
     selectedColor?: string | number,
-    formData?: FormData
+    formData?: formDataType
   ) => {
     e?.preventDefault();
     setIsSubmitting(true);
