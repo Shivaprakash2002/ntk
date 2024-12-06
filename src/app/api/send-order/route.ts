@@ -17,6 +17,7 @@ interface Product {
 }
 
 interface Item {
+  selectedSize: any;
   selectedColorImage: {
     asset: {
       url: string;
@@ -55,6 +56,7 @@ const createItemsHTML = (items: Item[]): string => {
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">x${item?.quantity ?? 1}</td>
       <td style="padding: 12px; border-bottom: 1px solid #eee;">₹${(item.product.price * (item?.quantity ?? 1)).toFixed(2)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #eee;">₹${(item.selectedSize)}</td>
     </tr>
   `).join('');
 };

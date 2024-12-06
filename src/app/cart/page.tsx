@@ -6,26 +6,26 @@ import { useCartContext } from '@/context/CartContext';
 import Link from 'next/link';
 
 const CartPage = () => {
-  const { 
-    cart, 
-    removeFromCart, 
+  const {
+    cart,
+    removeFromCart,
     updateQuantity,
     setCart,
   } = useCartContext();
-  
+
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
 
   // Calculate totals
-  const subtotal = cart.reduce((total, item) => 
+  const subtotal = cart.reduce((total, item) =>
     total + (item.product.price * item.quantity), 0);
   const shipping = subtotal > 100 ? 0 : 10;
- 
+
   const total = subtotal + shipping;
 
   // Handle quantity update with loading state
   const handleQuantityUpdate = (productId: string, selectedColor: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    
+
     updateQuantity(productId, selectedColor, newQuantity);
 
     // Simulate API call
@@ -33,32 +33,32 @@ const CartPage = () => {
   };
 
 
- 
- useEffect(() => {
-  const updatedCart = cart.map((element) => {
-    // Find the selected color image for the selected color
-    const selectedColorImage = element.product.colorImageMap.find(
-      (colorObj) => colorObj.color.hex === element.selectedColor
-    );
 
-    // Set the selectedColorImage to match the CartItem type
-    return {
-      ...element,
-      selectedColorImage: selectedColorImage
-        ? {
+  useEffect(() => {
+    const updatedCart = cart.map((element) => {
+      // Find the selected color image for the selected color
+      const selectedColorImage = element.product.colorImageMap.find(
+        (colorObj) => colorObj.color.hex === element.selectedColor
+      );
+
+      // Set the selectedColorImage to match the CartItem type
+      return {
+        ...element,
+        selectedColorImage: selectedColorImage
+          ? {
             asset: selectedColorImage.images[0].asset.url,  // Extract the URL as string
             url: selectedColorImage.images[0].asset.url,    // Use the same URL for `url`
           }
-        : undefined,  // If no image is found, set to undefined
-    };
-  });
+          : undefined,  // If no image is found, set to undefined
+      };
+    });
 
-  // Update the cart with the new cart items
- // @ts-expect-error: CartItem type requires specific structure for selectedColorImage, which is different from the current one.
-  setCart(updatedCart);
-}, []);
+    // Update the cart with the new cart items
+    // @ts-expect-error: CartItem type requires specific structure for selectedColorImage, which is different from the current one.
+    setCart(updatedCart);
+  }, []);
 
-
+  console.log('cartcart', cart);
 
 
   return (
@@ -76,14 +76,14 @@ const CartPage = () => {
             ) : (
               <div className="shadow">
                 {cart.map((item) => (
-                  <div 
+                  <div
                     key={item.product._id}
                     className="flex items-center gap-4 p-4 border-b last:border-b-0 bg-white mb-4 rounded-lg"
                   >
                     {/* Product Image */}
                     <div className="relative w-24 h-24 flex-shrink-0">
                       <Image
-                      // @ts-expect-error: for src
+                        // @ts-expect-error: for src
                         src={item.selectedColorImage?.asset}
                         alt={item.product.name}
                         fill
@@ -93,15 +93,15 @@ const CartPage = () => {
 
                     {/* Product Details */}
                     <div className="flex-grow">
-                      <h3 className="text-lg font-medium">{item.product.name}</h3>
-                      {/* <div className="text-sm text-gray-500 mt-1">
-                        {item.product.size && <span>Size: {item.product.size} </span>}
-                        {item.product.color && <span>• Color: {item.product.color}</span>}
-                      </div> */}
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-medium">{item.product.name}</h3>
+                        <span className="text-sm font-medium text-gray-500">{`(${item?.selectedSize})`}</span>
+                      </div>
                       <div className="text-lg font-medium mt-2">
                         ₹{item.product.price.toFixed(2)}
                       </div>
                     </div>
+
 
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2">
@@ -123,8 +123,8 @@ const CartPage = () => {
                     </div>
 
                     {/* Remove Button */}
-                    <button 
-                      onClick={() => removeFromCart(item.product._id , item.selectedColor)}
+                    <button
+                      onClick={() => removeFromCart(item.product._id, item.selectedColor)}
                       className="p-2 text-gray-400 hover:text-gray-600"
                     >
                       <X size={20} />
@@ -139,7 +139,7 @@ const CartPage = () => {
           <div className="lg:w-1/3">
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-4 text-black">Order Summary</h2>
-              
+
               <div className="space-y-3 text-gray-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
@@ -153,7 +153,7 @@ const CartPage = () => {
                     <span>₹{shipping.toFixed(2)}</span>
                   )}
                 </div>
-               
+
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
@@ -162,13 +162,13 @@ const CartPage = () => {
                 </div>
               </div>
               <Link href="/checkout">
-              <button 
-                className="w-full mt-6 bg-black text-white py-3 rounded-md hover:bg-gray-800 
+                <button
+                  className="w-full mt-6 bg-black text-white py-3 rounded-md hover:bg-gray-800 
                 transition-colors font-medium disabled:bg-gray-400"
-                disabled={cart.length === 0}
-              >
-                Proceed to Checkout
-              </button>
+                  disabled={cart.length === 0}
+                >
+                  Proceed to Checkout
+                </button>
               </Link>
 
               {shipping > 0 && (

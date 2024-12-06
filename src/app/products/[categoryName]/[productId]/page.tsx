@@ -26,6 +26,9 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
   const product = products?.find((p) => p._id === params.productId);
   const colors = product?.colorImageMap?.map((ele) => ele.color.hex);
+  const sizes = ["S", "M", "L", "XL"];
+  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+
 
   const [selectedColor, setSelectedColor] = useState((colors?.length ?? 0) > 0 ? colors ? colors[0] : 0 : "");
   const [selectedImage, setSelectedImage] = useState(product?.colorImageMap[0]?.images[0]?.asset?.url);
@@ -45,6 +48,10 @@ export default function Product({ params }: { params: { categoryName: string; pr
     setSelectedColor(color);
   };
 
+  const handleSizeClick = (size: string) => {
+    setSelectedSize(size);
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -58,9 +65,9 @@ export default function Product({ params }: { params: { categoryName: string; pr
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    
+
     try {
-      
+
       await handleSubmit(e, true, product?._id, selectedColor, formData);
       setShowCheckout(false);
       setFormData({
@@ -78,6 +85,38 @@ export default function Product({ params }: { params: { categoryName: string; pr
       setIsProcessing(false);
     }
   };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check this out!",
+          text: `Here is some interesting content to share: ${window.location.href}`, // Include the full URL in text
+          url: window.location.href, // Full URL to share
+        });
+        console.log("Content shared successfully");
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      alert("Sharing is not supported in this browser.");
+    }
+  };
+
+  function formatDescriptionToArray(description: any) {
+    return description
+      .split(",")
+      .map((line: any) => line.trim())
+      .filter((line: any) => line);
+  }
+
+
+  const descriptionArray = formatDescriptionToArray(
+    product?.description || "No description available."
+  );
+
+  console.log('descriptionArray', descriptionArray);
+
 
   return (
     <>
@@ -122,16 +161,20 @@ export default function Product({ params }: { params: { categoryName: string; pr
               <p className="text-gray-600 mt-2">{product?.type}</p>
             </div>
 
+
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold">₹{product?.price}</p>
                 <p className="text-green-600 text-sm">In Stock</p>
               </div>
               <div className="flex gap-4">
-                <button className="p-2 rounded-full hover:bg-gray-100">
+                {/* <button className="p-2 rounded-full hover:bg-gray-100">
                   <Heart className="w-6 h-6" />
-                </button>
-                <button className="p-2 rounded-full hover:bg-gray-100">
+                  </button> */}
+                <button
+                  className="p-2 rounded-full hover:bg-gray-100"
+                  onClick={handleShare}
+                >
                   <Share2 className="w-6 h-6" />
                 </button>
               </div>
@@ -152,21 +195,42 @@ export default function Product({ params }: { params: { categoryName: string; pr
               ))}
             </div>
 
-            <div>
-              <h2 className="font-semibold mb-2">Description</h2>
-              <p className="text-gray-600">{product?.description}</p>
+            <div className="text-gray-600">
+              <p className="font-semibold mb-2">Select Size:</p>
+              <div className="flex gap-2">
+                {sizes.map((size, index) => (
+                  <button
+                    key={index}
+                    className={`py-2 px-4 border rounded-md ${selectedSize === size ? "bg-black text-white" : "bg-white"
+                      }`}
+                    onClick={() => handleSizeClick(size)}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+
+            <div className="text-gray-600">
+              <p className="font-semibold mb-2">Product Description:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                {descriptionArray.map((line: any, index: number) => (
+                  <li key={index}>{line}</li>
+                ))}
+              </ul>
             </div>
 
             <div className="space-y-4">
               <button
                 className="w-full bg-black text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-gray-800"
-                onClick={() => addToCart(product?._id, selectedColor, products)}
+                onClick={() => addToCart(product?._id, selectedColor, products, selectedSize)}
               >
                 <ShoppingCart />
                 Add to Cart
               </button>
 
-              <button 
+              <button
                 className="w-full border border-black py-3 px-6 rounded-md hover:bg-gray-50"
                 onClick={() => setShowCheckout(true)}
               >
@@ -185,7 +249,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b">
                 <h2 className="text-lg font-semibold">Checkout</h2>
-                <button 
+                <button
                   onClick={() => setShowCheckout(false)}
                   className="p-2 hover:bg-gray-100 rounded-full"
                 >
