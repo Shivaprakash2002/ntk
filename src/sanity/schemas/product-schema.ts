@@ -41,6 +41,15 @@ export const product = defineType({
                 layout: "grid", // Optional: arranges the images in a grid view for better visualization
               },
             },
+            {
+              name: "sizes",
+              title: "Sizes",
+              type: "array",
+              of: [{ type: "string" }],
+              options: {
+                layout: "tags", // Optional: allows easy tagging of sizes like S, M, L, XL
+              },
+            },
           ],
         },
       ],

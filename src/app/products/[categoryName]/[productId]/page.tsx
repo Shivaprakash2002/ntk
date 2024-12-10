@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import { useProductContext } from "@/context/ProductContext";
-import { ShoppingCart,  Share2, X } from "lucide-react";
+import { ShoppingCart, Share2, X } from "lucide-react";
 import Image from "next/image";
 import { useCartContext } from "@/context/CartContext";
 import { ColorImage } from "@/app/types";
@@ -26,8 +26,8 @@ export default function Product({ params }: { params: { categoryName: string; pr
 
   const product = products?.find((p) => p._id === params.productId);
   const colors = product?.colorImageMap?.map((ele) => ele.color.hex);
-  const sizes = ["S", "M", "L", "XL"];
-  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+  const sizes = product?.colorImageMap?.flatMap(ele => ele.sizes ?? []) || [];
+  const [selectedSize, setSelectedSize] = useState(sizes.length > 0 ? sizes[0] : "");
 
 
   const [selectedColor, setSelectedColor] = useState((colors?.length ?? 0) > 0 ? colors ? colors[0] : 0 : "");
@@ -195,21 +195,23 @@ export default function Product({ params }: { params: { categoryName: string; pr
               ))}
             </div>
 
-            <div className="text-gray-600">
-              <p className="font-semibold mb-2">Select Size:</p>
-              <div className="flex gap-2">
-                {sizes.map((size, index) => (
-                  <button
-                    key={index}
-                    className={`py-2 px-4 border rounded-md ${selectedSize === size ? "bg-black text-white" : "bg-white"
-                      }`}
-                    onClick={() => handleSizeClick(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {sizes.length > 0 &&
+              <div className="text-gray-600">
+                <p className="font-semibold mb-2">Select Size:</p>
+                <div className="flex gap-2">
+                  {sizes.map((size, index) => (
+                    <button
+                      key={index}
+                      className={`py-2 px-4 border rounded-md ${selectedSize === size ? "bg-black text-white" : "bg-white"
+                        }`}
+                      onClick={() => handleSizeClick(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            }
 
 
             <div className="text-gray-600">

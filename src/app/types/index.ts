@@ -3,12 +3,14 @@ export interface Image{
 }
 
 export interface ImageAsset {
-    _id: string;
-    url: string;
+  _id: string;
+  url: string;
 }
+
 export interface ColorImage {
-  images: {asset: ImageAsset}[];
-  color: {hex: string}
+  images: { asset: ImageAsset }[];
+  color: { hex: string };
+  sizes: string[]; // Added sizes as an array of strings
 }
 
 export interface Product {
@@ -42,7 +44,6 @@ export interface CategoryProps{
   slug: string;
   image: Image
 }
-
 
 
 export interface SlideItem {

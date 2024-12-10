@@ -20,13 +20,15 @@ export const getAllProducts = async (): Promise<Product[]> => {
             _id,
             url
           }
-        }
+        },
+        sizes // Include the sizes field in the query
       }
     }`,
     {},
     { cache: "no-store" }
   );
 };
+
 
 
 
