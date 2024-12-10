@@ -3,16 +3,13 @@ import { useCartContext } from '@/context/CartContext';
 import Image from 'next/image';
 import React from 'react';
 import useCheckout from '../lib/hooks/useCheckOut';
-
 export default function CheckoutForm() {
-
   const { handleSubmit, isSubmitting,  submitStatus, handleInputChange, formData} = useCheckout();
-
+  console.log(formData)
   const { cart, getCartTotal } = useCartContext();
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6">Checkout</h2>
-
       {/* Order Summary */}
       <div className="mb-8 p-4 bg-gray-50 rounded-md">
         <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
@@ -39,8 +36,6 @@ export default function CheckoutForm() {
           </div>
         </div>
       </div>
-
-
       {/* Checkout Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -67,7 +62,6 @@ export default function CheckoutForm() {
             />
           </div>
         </div>
-
         <div>
           <label className="block text-sm font-medium mb-1">Phone</label>
           <input
@@ -79,7 +73,6 @@ export default function CheckoutForm() {
             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium mb-1">Address</label>
           <input
@@ -91,7 +84,6 @@ export default function CheckoutForm() {
             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">City</label>
@@ -116,7 +108,6 @@ export default function CheckoutForm() {
             />
           </div>
         </div>
-
         <div>
           <label className="block text-sm font-medium mb-1">Additional Notes</label>
           <textarea
@@ -127,19 +118,16 @@ export default function CheckoutForm() {
             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
         {submitStatus === 'success' && (
           <div className="p-4 bg-green-100 text-green-700 rounded">
             Order submitted successfully! Check your email for confirmation.
           </div>
         )}
-
         {submitStatus === 'error' && (
           <div className="p-4 bg-red-100 text-red-700 rounded">
             Failed to submit order. Please try again.
           </div>
         )}
-
         <button
           type="submit"
           disabled={isSubmitting}
@@ -151,10 +139,3 @@ export default function CheckoutForm() {
     </div>
   );
 }
-
-
-
-
-
-
-

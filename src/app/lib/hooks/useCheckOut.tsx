@@ -47,9 +47,7 @@ const useCheckout = (): UseCheckoutReturn => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<
-    "idle" | "success" | "error"
-  >("idle");
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -65,18 +63,14 @@ const useCheckout = (): UseCheckoutReturn => {
     e?: React.FormEvent,
     isBuyNow: boolean = false,
     selectedProductId?: string,
-    selectedColor?: string | number,
-    formData?: formDataType
+    selectedColor?: string | number
   ) => {
     e?.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus("idle");
 
-    console.log("Selected product Id: ", selectedProductId);
-    console.log("Selected color: ", selectedColor);
-    console.log("Is Buy Now: ", isBuyNow);
-
     try {
+      console.log("Submitting form data:", formData); // Debugging
       const response = await fetch("/api/send-order", {
         method: "POST",
         headers: {
@@ -88,9 +82,7 @@ const useCheckout = (): UseCheckoutReturn => {
             items: isBuyNow
               ? [
                   {
-                    product: products?.find(
-                      (item) => item._id === selectedProductId
-                    ),
+                    product: products?.find((item) => item._id === selectedProductId),
                     selectedColorImage: {
                       asset: products
                         ?.find((item) => item._id === selectedProductId)
@@ -98,13 +90,11 @@ const useCheckout = (): UseCheckoutReturn => {
                           (colorImage) => colorImage.color.hex === selectedColor
                         )?.images[0].asset.url,
                     },
-                    
                   },
-                  
                 ]
               : cart,
             total: isBuyNow
-              ?  products?.find(product => product._id === selectedProductId)?.price ?? 0 
+              ? products?.find((product) => product._id === selectedProductId)?.price ?? 0
               : getCartTotal(),
           },
         }),

@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import { useProductContext } from "@/context/ProductContext";
-import { ShoppingCart, Heart, Share2, X } from "lucide-react";
+import { ShoppingCart,  Share2, X } from "lucide-react";
 import Image from "next/image";
 import { useCartContext } from "@/context/CartContext";
 import { ColorImage } from "@/app/types";
@@ -103,11 +103,11 @@ export default function Product({ params }: { params: { categoryName: string; pr
     }
   };
 
-  function formatDescriptionToArray(description: any) {
+  function formatDescriptionToArray(description: string) {
     return description
       .split(",")
-      .map((line: any) => line.trim())
-      .filter((line: any) => line);
+      .map((line: string) => line.trim())
+      .filter((line: string) => line);
   }
 
 
@@ -215,7 +215,7 @@ export default function Product({ params }: { params: { categoryName: string; pr
             <div className="text-gray-600">
               <p className="font-semibold mb-2">Product Description:</p>
               <ul className="list-disc ml-5 space-y-1">
-                {descriptionArray.map((line: any, index: number) => (
+                {descriptionArray.map((line: string, index: number) => (
                   <li key={index}>{line}</li>
                 ))}
               </ul>

@@ -17,7 +17,7 @@ interface Product {
 }
 
 interface Item {
-  selectedSize: any;
+  selectedSize: string;
   selectedColorImage: {
     asset: {
       url: string;
@@ -82,11 +82,11 @@ const createAdminEmailHTML = (customerDetails: CustomerDetails, orderDetails: Or
         <table width="100%" style="margin-bottom: 20px;">
           <tr>
             <td style="padding: 8px 0;"><strong>Name:</strong></td>
-            <td>${customerDetails.fullName}</td>
+            <td>${customerDetails?.fullName}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0;"><strong>Email:</strong></td>
-            <td>${customerDetails.email}</td>
+            <td>${customerDetails?.email}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0;"><strong>Phone:</strong></td>
@@ -144,7 +144,7 @@ const createCustomerEmailHTML = (customerDetails: CustomerDetails, orderDetails:
     </tr>
     <tr>
       <td style="padding: 20px;">
-        <p style="font-size: 16px; color: #444;">Dear ${customerDetails.fullName},</p>
+        <p style="font-size: 16px; color: #444;">Dear ${customerDetails?.fullName},</p>
         <p style="font-size: 16px; color: #444;">We've received your order and we're working on it. Here's a summary of your purchase:</p>
         <h2 style="color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px;">Order Summary</h2>
         <table width="100%" style="margin-bottom: 20px;">
@@ -202,16 +202,16 @@ export async function POST(request: Request) {
     const res = await transporter.sendMail({
       from: process.env.SMTP_USER,
       to: "nambathunikadai@gmail.com",
-      subject: `New Order from ${customerDetails.fullName}`,
+      subject: `New Order from ${customerDetails?.fullName}`,
       html: createAdminEmailHTML(customerDetails, orderDetails),
     });
     console.log('Admin email sent successfully', res);
-    console.log("Customer Email: ", customerDetails.email);
+    console.log("Customer Email: ", customerDetails?.email);
 
     // Send confirmation email to customer
     await transporter.sendMail({
       from: process.env.SMTP_FROM,
-      to: customerDetails.email,
+      to: customerDetails?.email,
       subject: 'Order Confirmation',
       html: createCustomerEmailHTML(customerDetails, orderDetails),
     });
@@ -220,10 +220,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error sending order:', error);
+    console.log(error)
     return NextResponse.json(
       { error: 'Failed to process order' },
       { status: 500 }
     );
   }
 }
-
